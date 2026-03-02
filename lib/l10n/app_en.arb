@@ -1,0 +1,69 @@
+{
+  "@@locale": "en",
+
+  "appName": "Kumbel",
+  "@appName": {
+    "description": "Название приложения, отображается в заголовке и на сплэш-экране"
+  },
+
+  "splashLoading": "Loading...",
+  "@splashLoading": {
+    "description": "Текст на сплэш-экране во время загрузки приложения"
+  },
+
+  "loginTitle": "Welcome",
+  "@loginTitle": {
+    "description": "Заголовок экрана входа"
+  },
+
+  "loginSubtitle": "Sign in to continue",
+  "@loginSubtitle": {
+    "description": "Подзаголовок экрана входа — подсказка пользователю"
+  },
+
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Текст кнопки входа через Google-аккаунт"
+  },
+
+  "signInError": "Sign-in failed. Please try again.",
+  "@signInError": {
+    "description": "Сообщение об ошибке при неудачном входе"
+  },
+
+  "tabMain": "Home",
+  "@tabMain": {
+    "description": "Название вкладки 'Главная' в нижней навигации"
+  },
+
+  "tabProfile": "Profile",
+  "@tabProfile": {
+    "description": "Название вкладки 'Профиль' в нижней навигации"
+  },
+
+  "greeting": "Hello, {name}!",
+  "@greeting": {
+    "description": "Приветствие с именем пользователя на главной вкладке",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John"
+      }
+    }
+  },
+
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Заголовок экрана профиля в AppBar"
+  },
+
+  "email": "Email",
+  "@email": {
+    "description": "Подпись поля электронной почты на экране профиля"
+  },
+
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Текст кнопки выхода из аккаунта"
+  }
+}

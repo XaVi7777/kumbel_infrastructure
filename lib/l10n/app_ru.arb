@@ -1,0 +1,16 @@
+{
+  "@@locale": "ru",
+
+  "appName": "Кумбел",
+  "splashLoading": "Загрузка...",
+  "loginTitle": "Добро пожаловать",
+  "loginSubtitle": "Войдите, чтобы продолжить",
+  "signInWithGoogle": "Войти через Google",
+  "signInError": "Не удалось войти. Попробуйте ещё раз.",
+  "tabMain": "Главная",
+  "tabProfile": "Профиль",
+  "greeting": "Привет, {name}!",
+  "profileTitle": "Профиль",
+  "email": "Почта",
+  "signOut": "Выйти"
+}
