@@ -75,6 +75,7 @@ class AuthRepository {
       AppLogger.info('AuthRepository: вход выполнен — ${user.email}');
       return user;
     } catch (error, stackTrace) {
+      print('e $error');
       AppLogger.error(
         'AuthRepository: ошибка входа через Google',
         error: error,

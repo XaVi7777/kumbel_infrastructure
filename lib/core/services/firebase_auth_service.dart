@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -9,66 +11,84 @@ import '../utils/logger.dart';
 /// 1. Если Firebase заменится другим сервисом — меняем только этот файл.
 /// 2. Логирование и обработка ошибок в одном месте.
 /// 3. Тестирование — проще подменить один сервис, чем весь Firebase.
-class FirebaseAuthService {
-  /// Экземпляр FirebaseAuth (работа с авторизацией).
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Экземпляр GoogleSignIn (синглтон в v7).
+
+class FirebaseAuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
-  // ── Текущий пользователь ─────────────────────────────────────
+  bool _initialized = false;
 
-  /// Текущий авторизованный пользователь (или `null`).
   User? get currentUser => _auth.currentUser;
 
-  /// Стрим изменений состояния авторизации.
-  ///
-  /// Каждый раз, когда пользователь входит или выходит,
-  /// стрим отправляет новый [User?].
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // ── Вход через Google ────────────────────────────────────────
-
-  /// Запускает флоу входа через Google.
-  ///
-  /// Возвращает [UserCredential] при успехе или `null`,
-  /// если пользователь отменил выбор аккаунта.
-  Future<UserCredential?> signInWithGoogle() async {
-    try {
-      // 1. Открываем окно выбора Google-аккаунта (v7 API).
-      final GoogleSignInAccount googleUser =
-          await _googleSignIn.authenticate();
-
-      // 2. Получаем idToken из аккаунта.
-      final GoogleSignInAuthentication googleAuth =
-          googleUser.authentication;
-
-      // 3. Создаём credential для Firebase.
-      final OAuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
-
-      // 4. Входим в Firebase с Google credential.
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      AppLogger.info(
-        'Google Sign-In: успешный вход — ${userCredential.user?.email}',
-      );
-      return userCredential;
-    } catch (error, stackTrace) {
-      AppLogger.error(
-        'Google Sign-In: ошибка входа',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      rethrow;
-    }
+  Future<void> initialize({required String serverClientId}) async {
+    if (_initialized) return;
+    await _googleSignIn.initialize(serverClientId: serverClientId);
+    _initialized = true;
   }
 
-  // ── Выход ────────────────────────────────────────────────────
+  /// Запускает флоу входа через Google (v7 event-based API).
+  Future<UserCredential?> signInWithGoogle() async {
+    await initialize(serverClientId: '445906720826-elngpi868s1o21hc64tolvv1b0itibis.apps.googleusercontent.com');
+    final completer = Completer<UserCredential?>();
 
-  /// Выход из Firebase и Google.
+    late final StreamSubscription<GoogleSignInAuthenticationEvent> subscription;
+
+    subscription = _googleSignIn.authenticationEvents.listen(
+      (event) async {
+        try {
+          switch (event) {
+            case GoogleSignInAuthenticationEventSignIn():
+              final idToken = event.user.authentication.idToken;
+              final credential = GoogleAuthProvider.credential(
+                idToken: idToken,
+              );
+              final userCredential =
+                  await _auth.signInWithCredential(credential);
+
+              AppLogger.info(
+                'Google Sign-In: успешный вход — ${userCredential.user?.email}',
+              );
+              if (!completer.isCompleted) {
+                completer.complete(userCredential);
+              }
+
+            case GoogleSignInAuthenticationEventSignOut():
+              // Пользователь вышел — возвращаем null
+              if (!completer.isCompleted) {
+                completer.complete(null);
+              }
+          }
+        } catch (error, stackTrace) {
+          AppLogger.error(
+            'Google Sign-In: ошибка при обработке',
+            error: error,
+            stackTrace: stackTrace,
+          );
+          if (!completer.isCompleted) {
+            completer.completeError(error);
+          }
+        } finally {
+          await subscription.cancel();
+        }
+      },
+      onError: (Object error) {
+        // Ошибки стрима (включая GoogleSignInException)
+        AppLogger.error('Google Sign-In: ошибка', error: error);
+        if (!completer.isCompleted) {
+          completer.completeError(error);
+        }
+        subscription.cancel();
+      },
+    );
+
+    _googleSignIn.authenticate();
+
+    return completer.future;
+  }
+
   Future<void> signOut() async {
     try {
       await Future.wait([
