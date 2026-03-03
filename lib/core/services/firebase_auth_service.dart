@@ -31,7 +31,7 @@ class FirebaseAuthService {
 
   /// Запускает флоу входа через Google (v7 event-based API).
   Future<UserCredential?> signInWithGoogle() async {
-    await initialize(serverClientId: '445906720826-elngpi868s1o21hc64tolvv1b0itibis.apps.googleusercontent.com');
+    await initialize(serverClientId: dotenv.env['SERVER_CLIENT_ID']);
     final completer = Completer<UserCredential?>();
 
     late final StreamSubscription<GoogleSignInAuthenticationEvent> subscription;
