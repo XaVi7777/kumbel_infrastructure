@@ -1,34 +1,41 @@
-import 'dart:developer' as dev;
+import 'package:logger/logger.dart';
 
-/// Простой логгер для отладки.
-///
-/// Использует `dart:developer` → сообщения видны в консоли
-/// при запуске через `flutter run`, но **не попадают** в
-/// релизную сборку (в отличие от `print`).
-///
-/// Пример:
-/// ```dart
-/// AppLogger.info('Пользователь вошёл');
-/// AppLogger.error('Ошибка загрузки', error: e);
-/// ```
 class AppLogger {
-  /// Информационное сообщение.
+  static final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 1,
+      errorMethodCount: 5,
+      lineLength: 80,
+      colors: true,
+      printEmojis: true,
+    ),
+  );
+
+  /// Информационное сообщение
   static void info(String message) {
-    dev.log('💡 $message', name: 'APP');
+    _logger.i(message);
   }
 
-  /// Предупреждение.
+  /// Предупреждение
   static void warning(String message) {
-    dev.log('⚠️ $message', name: 'APP');
+    _logger.w(message);
   }
 
-  /// Ошибка (можно передать объект ошибки и стек-трейс).
-  static void error(String message, {Object? error, StackTrace? stackTrace}) {
-    dev.log(
-      '❌ $message',
-      name: 'APP',
+  /// Ошибка
+  static void error(
+    String message, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _logger.e(
+      message,
       error: error,
       stackTrace: stackTrace,
     );
+  }
+
+  /// Debug (полезно для разработки)
+  static void debug(String message) {
+    _logger.d(message);
   }
 }

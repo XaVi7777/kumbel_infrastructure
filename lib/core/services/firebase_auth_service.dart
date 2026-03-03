@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../utils/logger.dart';
@@ -31,7 +32,11 @@ class FirebaseAuthService {
 
   /// Запускает флоу входа через Google (v7 event-based API).
   Future<UserCredential?> signInWithGoogle() async {
-    await initialize(serverClientId: dotenv.env['SERVER_CLIENT_ID']);
+    final serverClientId = dotenv.env['SERVER_CLIENT_ID'];
+    if(serverClientId == null){
+      throw Exception('Server client is empty!');
+    }
+    await initialize(serverClientId: serverClientId);
     final completer = Completer<UserCredential?>();
 
     late final StreamSubscription<GoogleSignInAuthenticationEvent> subscription;
