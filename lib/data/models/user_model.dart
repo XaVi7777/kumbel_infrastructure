@@ -23,6 +23,7 @@ class UserModel extends Equatable {
 
   /// URL аватара (может быть пустой строкой).
   final String photoUrl;
+  
 
   const UserModel({
     required this.uid,

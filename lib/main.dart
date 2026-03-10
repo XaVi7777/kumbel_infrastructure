@@ -21,7 +21,9 @@ void main() async {
     await dotenv.load();
     AppLogger.info('main: .env загружен');
   } catch (_) {
-    AppLogger.warning('main: .env файл не найден — используем значения по умолчанию');
+    AppLogger.warning(
+      'main: .env файл не найден — используем значения по умолчанию',
+    );
   }
 
   // Инициализируем Firebase.
@@ -29,5 +31,6 @@ void main() async {
   AppLogger.info('main: Firebase инициализирован');
 
   // Запускаем приложение.
+
   runApp(const App());
 }

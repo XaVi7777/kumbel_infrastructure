@@ -44,6 +44,7 @@ class UserAvatar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return CircleAvatar(
+      
       radius: radius,
       // Если URL не пустой — загружаем фото из сети.
       // NetworkImage загружает картинку асинхронно и кэширует её.

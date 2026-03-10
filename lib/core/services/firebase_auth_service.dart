@@ -33,6 +33,7 @@ class FirebaseAuthService {
   /// Запускает флоу входа через Google (v7 event-based API).
   Future<UserCredential?> signInWithGoogle() async {
     final serverClientId = dotenv.env['SERVER_CLIENT_ID'];
+ 
     if(serverClientId == null){
       throw Exception('Server client is empty!');
     }
